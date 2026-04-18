@@ -6,6 +6,9 @@ import {
 import {
     extension_settings, renderExtensionTemplateAsync,
 } from '../../../extensions.js';
+import {
+    selected_group,
+} from '../../../group-chats.js';
 
 const EXTENSION_NAME = 'third-party/SillyTavern-OpenVikingMemory';
 const PROMPT_TAG = 'openviking_memory';
@@ -35,7 +38,7 @@ function buildRequestContext() {
         characterId: character?.avatar || 'unknown',
         characterName: character?.name || 'Unknown',
         chatId: chatId || 'current-chat',
-        groupId: '',
+        groupId: selected_group || '',
         baseUrl: settings.baseUrl,
     };
 }
