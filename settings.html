@@ -1,0 +1,24 @@
+<div class="openviking-memory-settings">
+    <div class="inline-drawer">
+        <div class="inline-drawer-toggle inline-drawer-header">
+            <b>OpenViking Memory</b>
+            <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+        </div>
+        <div class="inline-drawer-content">
+            <label class="checkbox_label"><input id="openviking_memory_enabled" type="checkbox" /> Enable OpenViking memory</label>
+            <label for="openviking_memory_base_url">OpenViking URL</label>
+            <input id="openviking_memory_base_url" class="text_pole" type="text" placeholder="http://127.0.0.1:1933" />
+            <label for="openviking_memory_top_k">Recall count</label>
+            <input id="openviking_memory_top_k" class="text_pole" type="number" min="1" max="20" step="1" />
+            <label for="openviking_memory_budget">Prompt character budget</label>
+            <input id="openviking_memory_budget" class="text_pole" type="number" min="200" max="12000" step="100" />
+            <label for="openviking_memory_template">Prompt template</label>
+            <textarea id="openviking_memory_template" class="text_pole" rows="6"></textarea>
+            <div class="openviking-memory-actions">
+                <input id="openviking_memory_test" class="menu_button" type="button" value="Test connection" />
+                <input id="openviking_memory_sync" class="menu_button" type="button" value="Sync current chat" />
+            </div>
+            <small id="openviking_memory_status">OpenViking memory is idle.</small>
+        </div>
+    </div>
+</div>
