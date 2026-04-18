@@ -1,0 +1,11 @@
+.openviking-memory-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.openviking-memory-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}

@@ -1,0 +1,13 @@
+{
+    "display_name": "OpenViking Memory",
+    "loading_order": 101,
+    "requires": [],
+    "optional": [],
+    "generate_interceptor": "openVikingMemory_beforeGeneration",
+    "js": "index.js",
+    "css": "style.css",
+    "author": "local",
+    "version": "0.1.0",
+    "license": "AGPL-3.0",
+    "description": "Uses OpenViking as a roleplay long-term memory layer."
+}
