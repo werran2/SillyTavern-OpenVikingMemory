@@ -6,9 +6,16 @@ import { cleanCapturedText, serializeChatTurn } from '../openviking/cleanup.js';
 
 export const router = express.Router();
 
-function getClient(body = {}) {
+router.use((req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({ ok: false, error: 'Unauthorized.' });
+    }
+    next();
+});
+
+function getClient() {
     return createOpenVikingClient({
-        baseUrl: String(body.baseUrl || getConfigValue('openviking.baseUrl', 'http://127.0.0.1:1933')),
+        baseUrl: String(getConfigValue('openviking.baseUrl', 'http://127.0.0.1:1933')),
         apiKey: String(getConfigValue('openviking.apiKey', '')),
     });
 }
@@ -25,9 +32,10 @@ function getRoute(req) {
 
 router.post('/status', async (req, res) => {
     try {
-        return res.json(await getClient(req.body).status());
+        return res.json(await getClient().status());
     } catch (error) {
-        return res.status(502).json({ ok: false, error: String(error.message || error) });
+        console.error('[OpenViking] /status error:', error);
+        return res.status(502).json({ ok: false, error: 'OpenViking service is unreachable.' });
     }
 });
 
@@ -37,10 +45,11 @@ router.post('/recall', async (req, res) => {
         if (!query) return res.json({ ok: true, items: [] });
         const route = getRoute(req);
         const topK = Math.min(Math.max(Number(req.body.topK) || 5, 1), 20);
-        const result = await getClient(req.body).recall({ route, query, topK, uri: route.memoryUri });
+        const result = await getClient().recall({ route, query, topK, uri: route.memoryUri });
         return res.json({ ok: true, route, result });
     } catch (error) {
-        return res.status(502).json({ ok: false, error: String(error.message || error) });
+        console.error('[OpenViking] /recall error:', error);
+        return res.status(502).json({ ok: false, error: 'Memory recall failed.' });
     }
 });
 
@@ -49,17 +58,18 @@ router.post('/capture', async (req, res) => {
         const text = cleanCapturedText(req.body.text);
         if (!text) return res.json({ ok: true, skipped: true });
         const route = getRoute(req);
-        const result = await getClient(req.body).capture({ route, sessionUri: route.sessionUri, text });
+        const result = await getClient().capture({ route, sessionUri: route.sessionUri, text });
         return res.json({ ok: true, route, result });
     } catch (error) {
-        return res.status(502).json({ ok: false, error: String(error.message || error) });
+        console.error('[OpenViking] /capture error:', error);
+        return res.status(502).json({ ok: false, error: 'Memory capture failed.' });
     }
 });
 
 router.post('/sync', async (req, res) => {
     try {
         const route = getRoute(req);
-        const client = getClient(req.body);
+        const client = getClient();
         const text = serializeChatTurn(req.body.messages);
         if (text) {
             await client.capture({ route, sessionUri: route.sessionUri, text });
@@ -67,6 +77,7 @@ router.post('/sync', async (req, res) => {
         const commitResult = await client.commit({ route, sessionUri: route.sessionUri, wait: Boolean(req.body.wait) });
         return res.json({ ok: true, route, capturedChars: text.length, commitResult });
     } catch (error) {
-        return res.status(502).json({ ok: false, error: String(error.message || error) });
+        console.error('[OpenViking] /sync error:', error);
+        return res.status(502).json({ ok: false, error: 'Chat sync failed.' });
     }
 });
