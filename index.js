@@ -240,32 +240,25 @@ async function testConnection() {
 }
 
 async function loadSettings() {
-    console.log('[OpenViking] loadSettings called');
     const settings = getSettings();
-    console.log('[OpenViking] Current settings:', settings);
 
-    // Create container for third-party extension
     const container = document.createElement('div');
     container.id = 'openviking_memory_container';
     container.className = 'extension_container';
     const extensionsSettings2 = document.getElementById('extensions_settings2');
-    console.log('[OpenViking] extensions_settings2 element:', extensionsSettings2);
 
     if (extensionsSettings2) {
         extensionsSettings2.appendChild(container);
-        console.log('[OpenViking] Container appended to extensions_settings2');
     } else {
-        console.error('[OpenViking] extensions_settings2 element not found!');
+        console.error('[OpenViking] extensions_settings2 element not found');
         return;
     }
 
     try {
         const html = await renderExtensionTemplateAsync(EXTENSION_NAME, 'settings');
-        console.log('[OpenViking] Template rendered, length:', html.length);
         container.insertAdjacentHTML('beforeend', html);
-        console.log('[OpenViking] HTML inserted into container');
     } catch (error) {
-        console.error('[OpenViking] Error rendering template:', error);
+        console.error('[OpenViking] Failed to render settings template:', error);
         return;
     }
 
@@ -326,13 +319,10 @@ async function loadSettings() {
     }
 }
 
-console.log('[OpenViking] Extension module loaded');
 globalThis.openVikingMemory_beforeGeneration = recallForGeneration;
 
 jQuery(async () => {
-    console.log('[OpenViking] jQuery ready, loading settings + registering listeners');
     await loadSettings();
     eventSource.on(event_types.MESSAGE_SENT, captureLastTurn);
     eventSource.on(event_types.MESSAGE_RECEIVED, captureLastTurn);
-    console.log('[OpenViking] Ready');
 });
